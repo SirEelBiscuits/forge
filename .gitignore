@@ -1,0 +1,3 @@
+*.user
+ide/vs/.vs
+ide/vs/Debug
