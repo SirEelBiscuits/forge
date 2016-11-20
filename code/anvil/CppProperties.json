@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "name": "Windows",
+      "includePath": [
+        "${WorkspaceRoot}"
+      ],
+      "compilerSwitches": "/std:C++14"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+namespace Anvil {
+	class Logging {
+
+	};
+}
