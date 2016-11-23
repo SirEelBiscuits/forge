@@ -11,7 +11,7 @@
 namespace Anvil {
 	using GetInputSignature    = void(*)();
 	using RequestRedrawSignature = void(*)();
-	using LogSignature         = void(*)(char*);
+	using LogSignature         = void(*)(char*, ...);
 	using QuitSignature        = std::function<void()>;
 
 	struct Platform {

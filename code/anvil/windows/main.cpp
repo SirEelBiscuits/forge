@@ -25,6 +25,7 @@ void RequestRedraw();
 void FlipBuffers();
 void ResizeScreenBuffer(int x, int y);
 bool Resizing { false };
+void Log(char* format, ...);
 
 int WINAPI WinMain(
 	HINSTANCE instance,
@@ -62,13 +63,11 @@ int WINAPI WinMain(
 	auto msPassed = std::chrono::duration_cast<std::chrono::milliseconds>(passed).count();
 	auto fps = frame / (std::chrono::duration_cast<std::chrono::milliseconds>(passed).count() / 1000.f);
 
-	char buffer[2000];
-	snprintf(buffer, 2000, "time: %dms, %d frames, %f avg fps\n", 
+	platform.Log("time: %dms, %d frames, %f avg fps\n"),
 		(int)std::chrono::duration_cast<std::chrono::milliseconds>(passed).count(), 
 		frame, 
 		frame / (std::chrono::duration_cast<std::chrono::milliseconds>(passed).count() / 1000.f)
 	);
-	OutputDebugString(buffer);
 
 }
 
@@ -78,8 +77,9 @@ BOOL Init(HINSTANCE instance) {
 	platform.keyboard = std::make_unique<Anvil::Keyboard>();
 	platform.mouse    = std::make_unique<Anvil::Mouse>();
 
-	platform.GetInput = &GetInput;
+	platform.GetInput      = &GetInput;
 	platform.RequestRedraw = &RequestRedraw;
+	platform.Log           = &Log;
 
 	WindowClass.cbSize = sizeof(WindowClass);
 	WindowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -198,4 +198,17 @@ void ResizeScreenBuffer(int x, int y) {
 	screenBuffer = new color[x*y];
 
 	platform.screen->SetBuffer(screenBuffer, x, y);
+}
+
+void Log(char* format, ...) {
+	const auto size = 2000;
+	auto buffer = new char[size];
+
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer, size, format, args);
+	OutputDebugString(buffer);
+	va_end(args);
+
+	delete buffer;;
 }
