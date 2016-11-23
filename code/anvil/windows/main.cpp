@@ -46,11 +46,12 @@ int WINAPI WinMain(
 
 	while (!quit) {
 		platform.GetInput();
-		if(modFrame > 300) {
+		if(modFrame > 0) {
 			modFrame = 0;
+			auto p = 0;
 			for(int y = 0 ; y < winH; ++y)
 				for(int x = 0; x < winW; ++x)
-					screenBuffer[x + y * winW] = x * y * frame;
+					screenBuffer[p++] = x * y * frame;
 		}
 		++modFrame;
 		++frame;
@@ -173,14 +174,13 @@ void FlipBuffers() {
 	RECT rect;
 	GetClientRect(window, &rect);
 
-	StretchDIBits(
+	SetDIBitsToDevice(
 		hdc,
 		0, 0, rect.right - rect.left, rect.bottom - rect.top,
-		0, 0, bufferInfo.bmiHeader.biWidth, bufferInfo.bmiHeader.biHeight,
+		0, 0, 0, bufferInfo.bmiHeader.biHeight,
 		screenBuffer,
 		&bufferInfo,
-		DIB_RGB_COLORS,
-		SRCCOPY
+		DIB_RGB_COLORS
 	);
 
 	EndPaint(window, &ps);
