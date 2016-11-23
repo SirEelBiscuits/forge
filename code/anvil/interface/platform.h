@@ -15,10 +15,10 @@ namespace Anvil {
 	using QuitSignature        = std::function<void()>;
 
 	struct Platform {
-		std::unique_ptr<Memory>   memory   = nullptr;
-		std::unique_ptr<Screen>   screen   = nullptr;
-		std::unique_ptr<Keyboard> keyboard = nullptr;
-		std::unique_ptr<Mouse>    mouse    = nullptr;
+		Memory   *memory   = nullptr;
+		Screen   *screen   = nullptr;
+		Keyboard *keyboard = nullptr;
+		Mouse    *mouse    = nullptr;
 
 		GetInputSignature    GetInput     = nullptr;
 		RequestRedrawSignature RequestRedraw  = nullptr;

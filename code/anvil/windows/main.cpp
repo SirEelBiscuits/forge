@@ -3,14 +3,23 @@
 #include <iostream>
 
 #include "interface/platform.h"
-#include "interface/keyboard.h"
 #include "interface/mouse.h"
-#include "interface/screen.h"
 #include "interface/memory.h"
+
+#include "keyboard.h"
+#include "screen.h"
 
 using color = int;
 
 static Anvil::Platform platform;
+
+static Windows::Screen screen;
+static Windows::Keyboard keyboard;
+
+//TODO windows ones
+static Anvil::Memory memory;
+static Anvil::Mouse mouse;
+
 static WNDCLASSEX WindowClass;
 static HWND window;
 static BITMAPINFO bufferInfo;
@@ -33,8 +42,29 @@ int WINAPI WinMain(
 	LPSTR CmdLine,
 	int CmdShow
 ) {
-	Init(instance);
+	if(Init(instance) == FALSE) {
+		//TODO
+		return EXIT_FAILURE;
+	}
+
 	window = MakeWindow(instance, CmdShow);
+	if(window == NULL) {
+		//TODO
+		return EXIT_FAILURE;
+	}
+
+	RAWINPUTDEVICE kb[2] = {};
+	kb[0].usUsagePage = 1;
+	kb[0].usUsage = 6;
+	kb[0].hwndTarget = window;
+	kb[1].usUsagePage = 1;
+	kb[1].usUsage = 2;
+	kb[1].hwndTarget = window;
+	kb[1].dwFlags = 0;
+	
+	if(RegisterRawInputDevices(kb, 2, sizeof(kb[0])) == FALSE) {
+		platform.Log("RawInput error: %d\n", GetLastError());
+	}
 
 	bool quit { false };
 	int frame = 0;
@@ -63,24 +93,25 @@ int WINAPI WinMain(
 	auto msPassed = std::chrono::duration_cast<std::chrono::milliseconds>(passed).count();
 	auto fps = frame / (std::chrono::duration_cast<std::chrono::milliseconds>(passed).count() / 1000.f);
 
-	platform.Log("time: %dms, %d frames, %f avg fps\n"),
-		(int)std::chrono::duration_cast<std::chrono::milliseconds>(passed).count(), 
-		frame, 
+	platform.Log("time: %dms, %d frames, %f avg fps\n",
+		(int)std::chrono::duration_cast<std::chrono::milliseconds>(passed).count(),
+		frame,
 		frame / (std::chrono::duration_cast<std::chrono::milliseconds>(passed).count() / 1000.f)
 	);
 
+	return EXIT_SUCCESS;
 }
 
 BOOL Init(HINSTANCE instance) {
-	platform.memory   = std::make_unique<Anvil::Memory>();
-	platform.screen   = std::make_unique<Anvil::Screen>();
-	platform.keyboard = std::make_unique<Anvil::Keyboard>();
-	platform.mouse    = std::make_unique<Anvil::Mouse>();
-
 	platform.GetInput      = &GetInput;
 	platform.RequestRedraw = &RequestRedraw;
 	platform.Log           = &Log;
 
+	platform.memory   = &memory;
+	platform.screen   = &screen;
+	platform.keyboard = &keyboard;
+	platform.mouse    = &mouse;
+	
 	WindowClass.cbSize = sizeof(WindowClass);
 	WindowClass.style = CS_HREDRAW | CS_VREDRAW;
 	WindowClass.lpfnWndProc = MainWndProc;
@@ -126,6 +157,32 @@ LRESULT CALLBACK MainWndProc(HWND window, UINT message, WPARAM wParam, LPARAM lP
 		platform.QuitCallback();
 		break;
 
+	case WM_ACTIVATE:
+		if(wParam != 0) {
+			keyboard.Reset();
+		}
+
+	case WM_INPUT: {
+		RAWINPUT data = {};
+		UINT size = sizeof(data);
+		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, &data, &size, sizeof(RAWINPUTHEADER));
+
+		switch(data.header.dwType) {
+		case RIM_TYPEKEYBOARD: {
+			auto key = Anvil::Keyboard::MakeKeycode(data.data.keyboard.MakeCode, (data.data.keyboard.Flags & 2) != 0);
+			keyboard.SetKeyState(
+				key,
+				(data.data.keyboard.Flags & 1) != 0
+					? Anvil::Keyboard::KeyState::Up
+					: Anvil::Keyboard::KeyState::Down
+			);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
 	default: break;
 	}
 	return DefWindowProc(window, message, wParam, lParam);
@@ -155,6 +212,7 @@ HWND MakeWindow(HINSTANCE instance, int cmdShow) {
 }
 
 void GetInput() {
+	keyboard.FlipKeyStates();
 	MSG msg;
 	while (PeekMessage(&msg, window, 0, 0, PM_REMOVE) != 0) {
 		TranslateMessage(&msg);
@@ -197,7 +255,7 @@ void ResizeScreenBuffer(int x, int y) {
 	delete[] screenBuffer;
 	screenBuffer = new color[x*y];
 
-	platform.screen->SetBuffer(screenBuffer, x, y);
+	screen.SetBuffer(screenBuffer, x, y);
 }
 
 void Log(char* format, ...) {

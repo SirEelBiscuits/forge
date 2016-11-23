@@ -3,6 +3,16 @@
 namespace Anvil {
 	class Screen {
 	public:
-		void SetBuffer(int *buffer, int x, int y) {}
+		using color = int;
+		using bufferDimension = unsigned;
+
+		color           *GetBuffer()       { return _buffer; }
+		bufferDimension  GetBufferWidth()  { return _width;  }
+		bufferDimension  GetBufferHeight() { return _height; }
+	
+	protected:
+		color *_buffer;
+		bufferDimension _width;
+		bufferDimension _height;
 	};
 }

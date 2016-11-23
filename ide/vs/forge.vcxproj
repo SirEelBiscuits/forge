@@ -118,6 +118,8 @@
     <ClInclude Include="..\..\code\anvil\interface\mouse.h" />
     <ClInclude Include="..\..\code\anvil\interface\platform.h" />
     <ClInclude Include="..\..\code\anvil\interface\screen.h" />
+    <ClInclude Include="..\..\code\anvil\windows\keyboard.h" />
+    <ClInclude Include="..\..\code\anvil\windows\screen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\anvil\windows\main.cpp" />
