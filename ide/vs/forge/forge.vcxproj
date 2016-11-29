@@ -19,20 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{317A52BF-A14B-47C7-978E-6B40BF87C6C3}</ProjectGuid>
+    <ProjectGuid>{18AAC852-A4F5-4532-8514-0CE789F9A113}</ProjectGuid>
     <RootNamespace>forge</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>anvil</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -75,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\code\anvil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -92,7 +91,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\code\anvil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\code;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -113,19 +112,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\code\anvil\interface\keyboard.h" />
-    <ClInclude Include="..\..\code\anvil\interface\memory.h" />
-    <ClInclude Include="..\..\code\anvil\interface\Module.h" />
-    <ClInclude Include="..\..\code\anvil\interface\mouse.h" />
-    <ClInclude Include="..\..\code\anvil\interface\platform.h" />
-    <ClInclude Include="..\..\code\anvil\interface\screen.h" />
-    <ClInclude Include="..\..\code\anvil\windows\keyboard.h" />
-    <ClInclude Include="..\..\code\anvil\windows\Module.h" />
-    <ClInclude Include="..\..\code\anvil\windows\screen.h" />
+    <ClCompile Include="..\..\..\code\forge\forgeMain.cpp" />
+    <ClCompile Include="..\..\..\code\forge\Game.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\code\anvil\windows\main.cpp" />
-    <ClCompile Include="..\..\code\anvil\windows\Module.cpp" />
+    <ClInclude Include="..\..\..\code\forge\Game.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

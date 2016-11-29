@@ -5,19 +5,22 @@
 namespace Windows {
 	class Module : public Anvil::Module {
 	public:
-		using methodType = void(*)(void*);
+		using updateMethodType = void(*)(void*);
+		using initialiseMethodType = void(*)(void*, Anvil::Platform*);
+		using reloadMethodType = void(*)(Anvil::Platform*);
 
-		Module(char const * moduleName);
+		Module(char const * moduleName, Anvil::Platform * platform);
 		virtual ~Module(){}
 
-		virtual void CallFunction(char const * name) override;
 		virtual void RunModuleUpdate()               override;
 		virtual void ReloadModule()                  override;
 
 	private:
-		methodType GetMethod(char const * name);
 		size_t GetObjectSize();
-		void * thisPtr;
+		void * thisPtr {nullptr};
 		void* dllHandle;
+
+		char const *     _name {nullptr};
+		Anvil::Platform *_platform {nullptr};
 	};
 }

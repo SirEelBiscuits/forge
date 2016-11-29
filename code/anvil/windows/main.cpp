@@ -8,6 +8,7 @@
 
 #include "keyboard.h"
 #include "screen.h"
+#include "Module.h"
 
 using color = int;
 
@@ -72,21 +73,14 @@ int WINAPI WinMain(
 
 	auto time = std::chrono::high_resolution_clock::now();
 
-	int modFrame = 0;
-	int mul = 0;
+	Windows::Module forgeDLL("forge.dll", &platform);
 
 	while (!quit) {
+		forgeDLL.ReloadModule();
+
 		platform.GetInput();
 
-		if(modFrame > 0) {
-			modFrame = 0;
-			auto p = 0;
-			for(int y = 0 ; y < winH; ++y)
-				for(int x = 0; x < winW; ++x)
-					screenBuffer[p++] = x * y * frame;
-		}
-		++modFrame;
-		++frame;
+		forgeDLL.RunModuleUpdate();
 
 		platform.RequestRedraw();
 	}

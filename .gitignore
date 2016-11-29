@@ -1,3 +1,4 @@
 *.user
 ide/vs/.vs
 ide/vs/Debug
+ide/**/Debug/*
