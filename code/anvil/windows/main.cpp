@@ -77,6 +77,7 @@ int WINAPI WinMain(
 
 	while (!quit) {
 		platform.GetInput();
+
 		if(modFrame > 0) {
 			modFrame = 0;
 			auto p = 0;
@@ -86,6 +87,7 @@ int WINAPI WinMain(
 		}
 		++modFrame;
 		++frame;
+
 		platform.RequestRedraw();
 	}
 
