@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "forge/reflection/reflection.h"
+#include "forge/reflection/jsonSerialiser.h"
 
 bool unitTest(std::string expected, std::string got, std::string failMessage = "fail") {
 	auto valid = expected.compare(got) == 0;

@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\code\forge\Game.h" />
+    <ClInclude Include="..\..\..\code\forge\reflection\jsonSerialiser.h" />
     <ClInclude Include="..\..\..\code\forge\reflection\reflection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
