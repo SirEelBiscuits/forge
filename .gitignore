@@ -2,3 +2,4 @@
 ide/vs/.vs
 ide/vs/Debug
 ide/**/Debug/*
+ide/vs/forge.sdf
