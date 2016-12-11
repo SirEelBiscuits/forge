@@ -5,7 +5,6 @@
 
 namespace Reflection {
 	namespace Detail {
-
 		/*
 		 * while function overloads might be simpler here, we'd still want a
 		 * way to handle the recursive case for reflectable classes, and we 
@@ -17,55 +16,64 @@ namespace Reflection {
 			bool isClass   = std::is_class<T>::value,
 			bool isEnum    = std::is_enum<T>::value,
 			bool isPointer = std::is_pointer<T>::value
-		> struct printJSONLine {
-			static void f(char const *name, T value, bool needsComma, std::ostream &os) {
+		> struct printJSONValue {
+			static void f(T value, std::ostream &os) {
 				static_assert(false, "Type T not supported!");
 			}
 		};
 
 		template<>
-		struct printJSONLine<int, false, false, false> {
-			static void f(char const *name, int value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": " << value << (needsComma? "," : "") << std::endl;
+		struct printJSONValue<int, false, false, false> {
+			static void f(int value, std::ostream &os) {
+				os <<  value;
 			}
 		};
 		
 		template<>
-		struct printJSONLine<char, false, false, false> {
-			static void f(char const *name, char value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": \"" << value << (needsComma? "\"," : "\"") << std::endl;
+		struct printJSONValue<char, false, false, false> {
+			static void f(char value, std::ostream &os) {
+				os << "\"" << value << '"';
 			}
 		};
 		
 		template<>
-		struct printJSONLine<float, false, false, false> {
-			static void f(char const *name, float value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": " << value << (needsComma? "," : "") << std::endl;
+		struct printJSONValue<float, false, false, false> {
+			static void f(float value, std::ostream &os) {
+				os << value;
 			}
 		};
 		
 		template<>
-		struct printJSONLine<double, false, false, false> {
-			static void f(char const *name, double value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": " << value << (needsComma? "," : "") << std::endl;
+		struct printJSONValue<double, false, false, false> {
+			static void f(double value, std::ostream &os) {
+				os << value << std::endl;
 			}
 		};
 		
+		//structs
 		template<typename T>
-		struct printJSONLine<T, true, false, false> {
-			static void f(char const *name, T value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": ";
+		struct printJSONValue<T, true, false, false> {
+			static void f(T value, std::ostream &os) {
 				printObjectAsJSON(value, os);
-				os << (needsComma? "," : "") << std::endl;
 			}
 		};
 
+		//enums
 		template<typename T>
-		struct printJSONLine<T, false, true, false> {
-			static void f(char const *name, T value, bool needsComma, std::ostream &os) {
-				os << '"' << name << "\": " << (int)value << (needsComma? "," : "") << std::endl;
+		struct printJSONValue<T, false, true, false> {
+			static void f(T value, std::ostream &os) {
+				os << (int)value;
 			}
 		};
+
+		///////////////////////////////////////////////////////////////////////
+
+		template<typename T>
+		void printJSONLine(char const *name, T value, bool needsComma, std::ostream &os = std::cout) {
+			os << '"' << name << "\": ";
+			printJSONValue<T>::f(value, os);
+			os << (needsComma? "," : "") << std::endl;
+		}
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -79,9 +87,7 @@ namespace Reflection {
 		struct printJSON_impl<n, max, false> {
 			template<typename O, typename... T, typename... S>
 			static void f(O &obj, std::tuple<T...> &names, std::tuple<S...> &pointers, std::ostream &os) {
-				printJSONLine<
-					std::remove_const<std::remove_reference<decltype(obj.*std::get<n>(pointers))>::type>::type
-				>::f(std::get<n>(names), obj.*std::get<n>(pointers), true, os);
+				printJSONLine(std::get<n>(names), obj.*std::get<n>(pointers), true, os);
 				printJSON_impl<n+1u, max>::f(obj, names, pointers, os);
 			}
 		};
@@ -90,9 +96,7 @@ namespace Reflection {
 		struct printJSON_impl<n, max, true> {
 			template<typename O, typename... T, typename... S>
 			static void f(O &obj, std::tuple<T...> &names, std::tuple<S...> &pointers, std::ostream &os) {
-				printJSONLine<
-					std::remove_const<std::remove_reference<decltype(obj.*std::get<n>(pointers))>::type>::type
-				>::f(std::get<n>(names), obj.*std::get<n>(pointers), false, os);
+				printJSONLine(std::get<n>(names), obj.*std::get<n>(pointers), false, os);
 			}
 		};
 
