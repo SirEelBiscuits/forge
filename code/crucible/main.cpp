@@ -18,15 +18,18 @@ int main() {
 
 	auto returnGood = true;
 
+	enum class foo { a, b, x };
+
 	class test{
 	public:
-#define ALL(NAME) NAME(x) NAME(y) NAME(z) NAME(c)
+#define ALL(NAME) NAME(x) NAME(y) NAME(z) NAME(c) NAME(e)
 		ANV_REFLECTION_DATA()
 #undef ALL
 
 	private:
 		int x {1}, y{2}, z{3};
 		char c {' '};
+		foo e{foo::a};
 	};
 
 	//print names test
@@ -34,7 +37,7 @@ int main() {
 		std::cout << "Testing printObjectMembers" << std::endl;
 		std::stringstream ss;
 		Reflection::printObjectMembers(test{}, ss);
-		returnGood &= unitTest("x, y, z, c\n", ss.str());
+		returnGood &= unitTest("x, y, z, c, e\n", ss.str());
 	}
 
 	//print JSON test
@@ -47,7 +50,8 @@ R"({
 "x": 1,
 "y": 2,
 "z": 3,
-"c": " "
+"c": " ",
+"e": 0
 })"
 			, ss.str()
 			, "Failed basic case. "
@@ -72,13 +76,15 @@ R"({
 "x": 1,
 "y": 2,
 "z": 3,
-"c": " "
+"c": " ",
+"e": 0
 },
 "speed": {
 "x": 1,
 "y": 2,
 "z": 3,
-"c": " "
+"c": " ",
+"e": 0
 }
 })"
 			, ss.str()
